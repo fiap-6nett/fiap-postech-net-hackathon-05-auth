@@ -51,8 +51,8 @@ public class UserCommandStore : IUserCommandStore
 
     public async Task<UserEntity?> GetUserByEmailAndPasswordAsync(string email)
     {
-        return await _context.UserEntities.AsNoTracking()
-            .FirstOrDefaultAsync(u => u.Email == email && u.IsAvailable);
+        var normalizedEmail = email.ToUpper();
+        return await _context.UserEntities.AsNoTracking().FirstOrDefaultAsync(u => u.Email.ToUpper() == normalizedEmail && u.IsAvailable);
     }
 
     public async Task<bool> ExistsByEmailOrCpfAsync(string email, string cpf)
