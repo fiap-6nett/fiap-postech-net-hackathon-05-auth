@@ -27,7 +27,7 @@ public class CreateEmployeeValidator : AbstractValidator<CreateEmployeeCommand>
 
         RuleFor(x => x.Role)
             .IsInEnum()
-            .Must(role => role == UserRole.Admin || role == UserRole.Manager || role == UserRole.Employee)
+            .Must(role => role == UserRole.Admin || role == UserRole.Manager || role == UserRole.Employee || role == UserRole.KitchenStaff)
             .WithMessage("O perfil do funcionário deve ser Admin, Manager ou Employee.");
     }
 }
