@@ -18,9 +18,16 @@ public enum UserRole
     ///     Usuário com perfil de colaborador, com acesso às funcionalidades operacionais.
     /// </summary>
     [Display(Name = "Employee")] Employee = 2,
+    
 
     /// <summary>
     ///     Usuário final do sistema, que consome os serviços ou produtos oferecidos.
     /// </summary>
-    [Display(Name = "Customer")] Customer = 3
+    [Display(Name = "Customer")] Customer = 3,
+    
+    /// <summary>
+    /// Funcionário responsável pelas atividades na cozinha, como preparação e finalização dos pedidos.
+    /// </summary>
+    [Display(Name = "Kitchen Staff")]
+    KitchenStaff = 4
 }
