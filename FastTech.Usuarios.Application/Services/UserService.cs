@@ -29,22 +29,33 @@ public class UserService : IUserService
     /// </summary>
     /// <param name="user"></param>
     /// <param name="passwordBase64"></param>
-    /// <param name="loginIdentifierType"></param>
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
-    public async Task<TokenEntity> GenerateTokenAsync(string user, string passwordBase64, LoginIdentifierType loginIdentifierType)
+    public async Task<TokenEntity> GenerateTokenAsync(string user, string passwordBase64)
     {
         try
         {
             var plainPassword = Encoding.UTF8.GetString(Convert.FromBase64String(passwordBase64));
 
             UserEntity? userEntity = null;
-
-            if (loginIdentifierType == LoginIdentifierType.Email)
-                userEntity = await _commandStore.GetUserByEmailAndPasswordAsync(user);
-            else
+            if (UserEntity.IsValidCpf(user))
+            {
+                // Se CPF válido
                 userEntity = await _commandStore.GetUserByCpfAndPasswordAsync(user);
-
+            }
+            else if (UserEntity.IsValidEmail(user))
+            {
+                // Se Email válido
+                userEntity = await _commandStore.GetUserByEmailAndPasswordAsync(user);
+            }
+            else
+            {
+                throw new UnauthorizedAccessException("O identificador informado não é um CPF ou e-mail válido.");
+            }
+            
+            if (userEntity is null)
+                throw new UnauthorizedAccessException("Credenciais inválidas. Usuário não encontrado.");
+            
             if (userEntity is null) throw new UnauthorizedAccessException("Invalid credentials.");
             var isMatch = BCrypt.Net.BCrypt.Verify(plainPassword, userEntity.PasswordHash);
             if (!isMatch) throw new UnauthorizedAccessException("Invalid credentials.");

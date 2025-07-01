@@ -19,7 +19,7 @@ public class CreateClientCommand
 
     /// <summary>
     ///     CPF do cliente, contendo apenas números.
-    ///     <para>Exemplo: <c>12345678900</c></para>
+    ///     <para>Exemplo: <c>82909117006</c></para>
     /// </summary>
     public string Cpf { get; set; }
 

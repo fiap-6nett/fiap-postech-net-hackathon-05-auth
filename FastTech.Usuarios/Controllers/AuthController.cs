@@ -30,7 +30,7 @@ public class AuthController : ControllerBase
     ///     <list type="bullet">
     ///         <item>
     ///             <description>Email: <c>admin@admin.com.br</c></description>
-    ///             <description>CPF: <c>12345678900</c></description>
+    ///             <description>CPF: <c>82909117006</c></description>
     ///         </item>
     ///         <item>
     ///             <description>LoginIdentifierType: <c>1</c> para CPF, <c>2</c> para E-mail</description>
@@ -56,7 +56,7 @@ public class AuthController : ControllerBase
         try
         {
             await _validatorTokensCommand.ValidateAndThrowAsync(payload);
-            var token = await _userService.GenerateTokenAsync(payload.User, payload.PasswordBase64, payload.LoginIdentifierType);
+            var token = await _userService.GenerateTokenAsync(payload.User, payload.PasswordBase64);
             return new OkObjectResult(new TokensCommandResult
             {
                 AccessToken = token.AccessToken,

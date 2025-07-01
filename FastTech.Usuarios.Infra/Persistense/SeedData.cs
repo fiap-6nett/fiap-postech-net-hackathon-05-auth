@@ -22,7 +22,7 @@ public static class SeedData
                 Id = Guid.NewGuid(),
                 Name = "Administrador",
                 Email = email,
-                Cpf = "12345678900",
+                Cpf = "82909117006",
                 PasswordHash = senhaHash,
                 Role = UserRole.Admin,
                 IsAvailable = true,

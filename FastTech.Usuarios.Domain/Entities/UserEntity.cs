@@ -27,7 +27,7 @@ public class UserEntity : BaseEntity
 
     /// <summary>
     ///     CPF of the user (Brazilian national identification number).
-    ///     <para>Example: <c>12345678900</c></para>
+    ///     <para>Example: <c>82909117006</c></para>
     /// </summary>
     public string Cpf { get; set; }
 
@@ -126,5 +126,23 @@ public class UserEntity : BaseEntity
     public static string SomenteNumeros(string value)
     {
         return new string(value?.Where(char.IsDigit).ToArray());
+    }
+    
+    /// <summary>
+    ///   Valida se o e-mail fornecido é válido.
+    /// </summary>
+    /// <param name="email"></param>
+    /// <returns></returns>
+    public static  bool IsValidEmail(string email)
+    {
+        try
+        {
+            var addr = new System.Net.Mail.MailAddress(email);
+            return addr.Address == email;
+        }
+        catch
+        {
+            return false;
+        }
     }
 }

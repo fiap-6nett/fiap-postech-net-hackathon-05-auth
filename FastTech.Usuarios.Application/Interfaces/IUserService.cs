@@ -5,7 +5,7 @@ namespace FastTech.Usuarios.Application.Interfaces;
 
 public interface IUserService
 {
-    Task<TokenEntity> GenerateTokenAsync(string user, string passwordBase64, LoginIdentifierType loginIdentifierType);
+    Task<TokenEntity> GenerateTokenAsync(string user, string passwordBase64);
     Task<UserEntity> RegisterUserAsync(string name, string cpf, string email, string passwordBase64, UserRole role);
     TokenEntity GenerateTokenJwt(Guid id, UserRole role);
     Task<UserEntity?> GetUserByIdAsync(Guid targetUserId, string requestingUserId, string requestingUserRole);

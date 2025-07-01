@@ -15,17 +15,6 @@ public class TokensValidatorTests
     }
 
     /// <summary>
-    ///     Deve falhar quando o tipo de identificador for inválido.
-    /// </summary>
-    [Fact]
-    public void Should_Have_Error_When_LoginIdentifierType_Is_Invalid()
-    {
-        var model = new TokensCommand { LoginIdentifierType = (LoginIdentifierType)999 };
-        var result = _validator.TestValidate(model);
-        result.ShouldHaveValidationErrorFor(x => x.LoginIdentifierType);
-    }
-
-    /// <summary>
     ///     Deve falhar quando o campo 'User' estiver vazio.
     /// </summary>
     [Fact]
@@ -33,7 +22,6 @@ public class TokensValidatorTests
     {
         var model = new TokensCommand
         {
-            LoginIdentifierType = LoginIdentifierType.Cpf,
             User = ""
         };
 
@@ -49,8 +37,7 @@ public class TokensValidatorTests
     {
         var model = new TokensCommand
         {
-            LoginIdentifierType = LoginIdentifierType.Cpf,
-            User = "12345678900" // CPF inválido
+            User = "82909117006" // CPF inválido
         };
 
         var result = _validator.TestValidate(model);
@@ -65,7 +52,6 @@ public class TokensValidatorTests
     {
         var model = new TokensCommand
         {
-            LoginIdentifierType = LoginIdentifierType.Email,
             User = "email-invalido"
         };
 
@@ -111,7 +97,6 @@ public class TokensValidatorTests
     {
         var model = new TokensCommand
         {
-            LoginIdentifierType = LoginIdentifierType.Cpf,
             User = "12345678909", // CPF válido
             PasswordBase64 = Convert.ToBase64String(Encoding.UTF8.GetBytes("admin123"))
         };
@@ -128,7 +113,6 @@ public class TokensValidatorTests
     {
         var model = new TokensCommand
         {
-            LoginIdentifierType = LoginIdentifierType.Email,
             User = "admin@admin.com",
             PasswordBase64 = Convert.ToBase64String(Encoding.UTF8.GetBytes("admin123"))
         };
