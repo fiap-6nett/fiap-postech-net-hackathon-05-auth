@@ -33,9 +33,6 @@ public class AuthController : ControllerBase
     ///             <description>CPF: <c>82909117006</c></description>
     ///         </item>
     ///         <item>
-    ///             <description>LoginIdentifierType: <c>1</c> para CPF, <c>2</c> para E-mail</description>
-    ///         </item>
-    ///         <item>
     ///             <description>PasswordBase64: <c>YWRtaW4xMjM=</c> (Base64 de <c>admin123</c>)</description>
     ///         </item>
     ///     </list>
