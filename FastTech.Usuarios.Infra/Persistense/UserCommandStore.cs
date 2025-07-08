@@ -19,9 +19,22 @@ public class UserCommandStore : IUserCommandStore
         await _context.SaveChangesAsync();
     }
 
-    public Task UpdateUserAsync(UserEntity user)
+    public async Task UpdateUserAsync(UserEntity user)
     {
-        throw new NotImplementedException();
+        var existingUser = await _context.UserEntities.FindAsync(user.Id);
+
+        if (existingUser == null || !existingUser.IsAvailable)
+            return;
+
+        existingUser.Name = user.Name;
+        existingUser.Email = user.Email;
+        existingUser.Cpf = UserEntity.SomenteNumeros(user.Cpf);
+        existingUser.Role = user.Role;
+        existingUser.PasswordHash = user.PasswordHash;
+        existingUser.LastUpdatedAt = DateTime.UtcNow;
+
+        _context.UserEntities.Update(existingUser);
+        await _context.SaveChangesAsync();
     }
 
     public async Task DeleteUserAsync(Guid id)

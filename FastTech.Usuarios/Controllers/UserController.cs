@@ -172,8 +172,9 @@ public class UserController : ControllerBase
         {
             payload.Id = id;
             await _validatorUpdateUserCommand.ValidateAndThrowAsync(payload);
-            
-            
+            var requestingUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var requestingUserRole = User.FindFirst(ClaimTypes.Role)?.Value;
+            var usuario = await _userService.UpdateUserAsync(payload.Id, payload.Name, payload.Cpf, payload.Email, payload.PasswordBase64, requestingUserId, requestingUserRole);
             
             return new OkObjectResult(true);
         }

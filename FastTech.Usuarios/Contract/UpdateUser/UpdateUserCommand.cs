@@ -10,7 +10,7 @@ public class UpdateUserCommand
     /// </summary>
     [JsonIgnore]
     public Guid Id { get; set; }
-
+    
     /// <summary>
     ///     Nome completo do cliente.
     ///     <para>Exemplo: <c>João da Silva</c></para>

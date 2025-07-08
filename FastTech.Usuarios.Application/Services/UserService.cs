@@ -270,30 +270,37 @@ public class UserService : IUserService
     {
         try
         {
-            var user = await _commandStore.GetUserByIdAsync(targetUserId);
-            
-            switch (user.Role)
-            {
-                case UserRole.Admin:
-                    throw new UnauthorizedAccessException("You do not have permission to access this user ADMIN.");
-                case UserRole.Customer:
-                    if (requestingUserRole != UserRole.Admin.ToString() && requestingUserRole != UserRole.Manager.ToString())
-                    {
-                        var requestingGuidUserId = Guid.Parse(requestingUserId);
-                        var equals = targetUserId.Equals(requestingGuidUserId);
-                        if (!equals) throw new UnauthorizedAccessException("You cannot delete your own user account.");
-                    }
-                    return user;
-                case UserRole.Manager:
-                case UserRole.Employee:
-                default:
-                    if (requestingUserRole != UserRole.Admin.ToString() && requestingUserRole != UserRole.Manager.ToString())
-                        throw new UnauthorizedAccessException("You do not have permission to delete this user.");
+            // Verifica se o usuário que está solicitando é o mesmo que está sendo atualizado
+            if (!Guid.TryParse(requestingUserId, out var requestingId) || requestingId != targetUserId)
+                throw new UnauthorizedAccessException("You do not have permission to update this user.");
 
-                    await _commandStore.DeleteUserAsync(targetUserId);
-                    user.IsAvailable = false;
-                    return user;
-            }
+            // Busca o usuário atual no banco
+            var existingUser = await _commandStore.GetUserByIdAsync(targetUserId);
+            if (existingUser == null || !existingUser.IsAvailable)
+                throw new Exception("User not found or is not active.");
+            
+            // Decodifica a senha base64 e gera o hash
+            var plainPassword = Encoding.UTF8.GetString(Convert.FromBase64String(passwordBase64));
+            var hashedPassword = BCrypt.Net.BCrypt.HashPassword(plainPassword);
+            
+            // Atualiza os campos permitidos
+            var updatedUser = new UserEntity
+            {
+                Id = targetUserId,
+                Name = name,
+                Cpf = UserEntity.SomenteNumeros(cpf),
+                Email = email.Trim().ToLower(),
+                PasswordHash = hashedPassword,
+                Role = existingUser.Role, 
+                IsAvailable = true,
+                CreatedAt = existingUser.CreatedAt, // preserva data de criação
+                LastUpdatedAt = DateTime.UtcNow
+            };
+            
+            await _commandStore.UpdateUserAsync(updatedUser);
+
+            return updatedUser;
+            
         }
         catch (Exception e)
         {
