@@ -19,10 +19,7 @@ using Microsoft.OpenApi.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
-
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddScoped<IUserService, UserService>();
@@ -36,11 +33,11 @@ builder.Services.AddSwaggerGen(options =>
 
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        Name = "Authorization", // nome do header
-        Type = SecuritySchemeType.Http, // tipo do esquema
-        Scheme = "Bearer", // tipo do token (Bearer token)
-        BearerFormat = "JWT", // formato do token
-        In = ParameterLocation.Header, // local onde o token será enviado
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
         Description = "Insira o token JWT no campo abaixo. Exemplo: Bearer {seu token}"
     });
 
@@ -60,14 +57,22 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 builder.Services.Configure<IdentitySettings>(builder.Configuration.GetSection("Identity"));
+
 builder.Services.AddValidatorsFromAssemblyContaining<CreateClientCommand>();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateEmployeeCommand>();
 builder.Services.AddValidatorsFromAssemblyContaining<DeleteUserCommand>();
 builder.Services.AddValidatorsFromAssemblyContaining<TokensCommand>();
 builder.Services.AddValidatorsFromAssemblyContaining<GetUserByIdQuery>();
 builder.Services.AddValidatorsFromAssemblyContaining<UpdateUserCommand>();
+
+// ⚠️ Leitura segura da SecretKey via variável de ambiente
+var jwtSecretKey = Environment.GetEnvironmentVariable("JWT_SECRET_KEY");
+if (string.IsNullOrEmpty(jwtSecretKey))
+    throw new InvalidOperationException("JWT_SECRET_KEY não definida no ambiente.");
 
 // Configuração de autenticação JWT
 builder.Services.AddAuthentication("Bearer").AddJwtBearer("Bearer", options =>
@@ -81,9 +86,9 @@ builder.Services.AddAuthentication("Bearer").AddJwtBearer("Bearer", options =>
         ClockSkew = TimeSpan.FromMinutes(5),
         ValidIssuer = builder.Configuration["Identity:Issuer"],
         ValidAudience = builder.Configuration["Identity:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Identity:SecretKey"])),
-        RoleClaimType = ClaimTypes.Role, // para [Authorize(Roles = ...)]
-        NameClaimType = ClaimTypes.NameIdentifier // para recuperar o ID com User.FindFirst(...)
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecretKey)),
+        RoleClaimType = ClaimTypes.Role,
+        NameClaimType = ClaimTypes.NameIdentifier
     };
 });
 
